@@ -869,68 +869,64 @@ Args:
 Returns:
   True if the object was taken."
 <ROUTINE TRY-TAKE (OBJ "OPT" SILENT "AUX" HOLDER)
-    <COND (<=? .OBJ ,WINNER>
-           <COND (.SILENT)
-                 (<=? ,P-V-WORD ,W?GET> <TELL "Not quite." CR>)
-                 (<=? ,P-V-WORD ,W?TAKE ,W?GRAB> <TSD>)
-                 (<=? ,P-V-WORD ,W?PICK> <TELL "You aren't my type." CR>)
-                 (ELSE <SILLY>)>
-           <RFALSE>)
-          (<FSET? .OBJ ,PERSONBIT>
-           <OR .SILENT <YOU-MASHER>>
-           <RFALSE>)
-          (<NOT <FSET? .OBJ ,TAKEBIT>>
-           <OR .SILENT <NOT-POSSIBLE "pick up">>
-           <RFALSE>)
-          (<IN? .OBJ ,WINNER>
-           <OR .SILENT <TELL "You already have that." CR>>
-           <RFALSE>)>
+    <COND
+        (<=? .OBJ ,WINNER>
+            <COND
+                (.SILENT)
+                (<=? ,P-V-WORD ,W?GET> <TELL "Not quite." CR>)
+                (<=? ,P-V-WORD ,W?TAKE ,W?GRAB> <TSD>)
+                (<=? ,P-V-WORD ,W?PICK> <TELL "You aren't my type." CR>)
+                (ELSE <SILLY>)>
+            <RFALSE>)
+        (<FSET? .OBJ ,PERSONBIT>
+            <OR .SILENT <YOU-MASHER>>
+            <RFALSE>)
+        (<NOT <FSET? .OBJ ,TAKEBIT>>
+            <OR .SILENT <NOT-POSSIBLE "pick up">>
+            <RFALSE>)
+        (<IN? .OBJ ,WINNER>
+            <OR .SILENT <TELL "You already have that." CR>>
+            <RFALSE>)>
     ;"See if picked up object is being taken from a container"
     <COND (<SET HOLDER <TAKE-HOLDER .OBJ ,WINNER>>
-           <COND (<FSET? .HOLDER ,PERSONBIT>
-                  <OR .SILENT <TELL "That seems to belong to " T .HOLDER "." CR>>
-                  <RFALSE>)
-                 (<BLOCKS-TAKE? .HOLDER>
-                  <THIS-IS-IT .HOLDER>
-                  <OR .SILENT <TELL CT .HOLDER " is in the way." CR>>
-                  <RFALSE>)
-                 (<NOT <TAKE-CAPACITY-CHECK .OBJ .SILENT>>)
-                 (<AND <FSET? .HOLDER ,CONTBIT>
-                       <HELD? .OBJ .HOLDER>
-                       <NOT <HELD? ,WINNER .HOLDER>>>
-                  <FSET .OBJ ,TOUCHBIT>
-                  <MOVE .OBJ ,WINNER>
-                  <COND (.SILENT)
-                        (<SHORT-REPORT?> <TELL "Taken." CR>)
+        <COND
+            (<FSET? .HOLDER ,PERSONBIT>
+                <OR .SILENT <TELL "That seems to belong to " T .HOLDER "." CR>>
+                <RFALSE>)
+            (<BLOCKS-TAKE? .HOLDER>
+                <THIS-IS-IT .HOLDER>
+                <OR .SILENT <TELL CT .HOLDER " is in the way." CR>>
+                <RFALSE>)
+            (<NOT <TAKE-CAPACITY-CHECK .OBJ .SILENT>>)
+            (<AND <FSET? .HOLDER ,CONTBIT> <HELD? .OBJ .HOLDER> <NOT <HELD? ,WINNER .HOLDER>>>
+                <FSET .OBJ ,TOUCHBIT>
+                <MOVE .OBJ ,WINNER>
+                <COND
+                    (.SILENT)
+                    (<SHORT-REPORT?>
+                        <TELL "Taken." CR>)
+                    (ELSE
+                        <TELL "You reach ">
+                        <COND (<HELD? ,WINNER .HOLDER>
+                            <TELL "out of ">)
                         (ELSE
-                         <TELL "You reach ">
-                         <COND (<HELD? ,WINNER .HOLDER>
-                                <TELL "out of ">)
-                               (ELSE <TELL "in ">)>
-                         <TELL T .HOLDER " and ">
-                         <COND (<FSET? .OBJ ,WEARBIT>
-                                <TELL "wear ">
-                                <FSET .OBJ ,WORNBIT>)
-                               (ELSE <TELL "take ">)>
-                         <TELL T .OBJ "." CR>)>
-                  <RTRUE>)>)>
-    <COND (<NOT <TAKE-CAPACITY-CHECK .OBJ .SILENT>>
-           <RFALSE>)
-          (<FSET? .OBJ ,WEARBIT>
-           <FSET .OBJ ,WORNBIT>
-           <MOVE .OBJ ,WINNER>
-           <FSET .OBJ ,TOUCHBIT>
-           <COND (.SILENT)
-                 (<SHORT-REPORT?> <TELL "Taken (and worn)." CR>)
-                 (ELSE <TELL "You wear " T .OBJ "." CR>)>
-           <RTRUE>)
-          (ELSE
-           <FSET .OBJ ,TOUCHBIT>
-           <MOVE .OBJ ,WINNER>
-           <COND (.SILENT)
-                 (<SHORT-REPORT?> <TELL "Taken." CR>)
-                 (ELSE <TELL "You pick up " T .OBJ "." CR>)>
-           <RTRUE>)>>
+                            <TELL "in ">)>
+                        <TELL T .HOLDER " and ">
+                        <TELL "take ">
+                        <TELL T .OBJ "." CR>)>
+                <RTRUE>)>)>
+    <COND
+        (<NOT <TAKE-CAPACITY-CHECK .OBJ .SILENT>>
+            <RFALSE>)
+        (ELSE
+            <FSET .OBJ ,TOUCHBIT>
+            <MOVE .OBJ ,WINNER>
+            <COND
+                (.SILENT)
+                (<SHORT-REPORT?> <TELL "Taken." CR>)
+                (ELSE <TELL "You pick up " T .OBJ "." CR>)>
+            <RTRUE>)>
+>
 
 ;"Locates the container, person, or room that restricts the ability to take a
 given object.
@@ -1024,15 +1020,19 @@ Returns:
 
 <ROUTINE PRE-DROP ()
     <COND (<NOT <IN? ,PRSO ,WINNER>>
-           <SETG P-CONT 0>
-           <PRINTR "You don't have that.">)>>
+        <SETG P-CONT 0>
+        <PRINTR "You don't have that.">)>
+>
 
 <ROUTINE V-DROP ()
     <MOVE ,PRSO ,HERE>
     <FSET ,PRSO ,TOUCHBIT>
     <FCLEAR ,PRSO ,WORNBIT>
-    <COND (<SHORT-REPORT?> <TELL "Dropped." CR>)
-          (ELSE <TELL "You drop " T ,PRSO "." CR>)>>
+    <COND (<SHORT-REPORT?>
+        <TELL "Dropped." CR>)
+    (ELSE
+        <TELL "You drop " T ,PRSO "." CR>)>
+>
 
 <ROUTINE PRE-PUT-ON ()
     <COND (<PRSI? ,WINNER> <PERFORM ,V?WEAR ,PRSO> <RTRUE>)
@@ -1147,15 +1147,19 @@ Returns:
 
 <ROUTINE V-WEAR ()
     <COND (<FSET? ,PRSO ,WEARBIT>
-           <PERFORM ,V?TAKE ,PRSO>)
-          (ELSE <NOT-POSSIBLE "wear">)>
-    <RTRUE>>
+        <COND (<NOT <FSET? ,PRSO ,WORNBIT>>
+            <FSET ,PRSO ,WORNBIT>
+            <TELL "You wear " T ,PRSO "." CR>)
+        (ELSE <TELL "You are already wearing that." CR>)>)
+    (ELSE <NOT-POSSIBLE "wear">)>
+>
 
 <ROUTINE V-UNWEAR ()
-    <COND (<AND <FSET? ,PRSO ,WORNBIT>
-                <IN? ,PRSO ,WINNER>>
-           <PERFORM ,V?DROP ,PRSO>)
-          (ELSE <TELL "You aren't wearing that." CR>)>>
+    <COND (<AND <IN? ,PRSO ,WINNER> <FSET? ,PRSO ,WORNBIT>>
+        <FCLEAR ,PRSO ,WORNBIT>
+        <TELL "You take off " T ,PRSO "." CR>)
+    (ELSE <TELL "You aren't wearing that." CR>)>
+ >
 
 <ROUTINE V-EAT ()
     <COND (<PRSO? ,WINNER> <TSD> <RTRUE>)
